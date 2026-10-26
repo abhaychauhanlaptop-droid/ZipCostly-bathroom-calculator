@@ -1,0 +1,44 @@
+---
+import { calculatorPath, calculators } from '../lib/data';
+import { site } from '../config/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-16 bg-ink text-white/80">
+  <div class="container-page grid gap-8 py-10 text-sm sm:grid-cols-3">
+    <div>
+      <p class="text-lg font-extrabold text-white"><span class="text-[#7FD6D0]">zip</span>costly</p>
+      <p class="mt-2">{site.tagline}</p>
+      <p class="mt-4 text-white/60">
+        Estimates are ranges for planning only. Real quotes vary with your home, your contractor and the season.
+      </p>
+    </div>
+    <nav aria-label="Calculators">
+      <p class="mb-2 font-bold text-white">Calculators</p>
+      <ul class="space-y-1.5">
+        {
+          calculators
+            .filter((c) => c.live)
+            .map((c) => (
+              <li>
+                <a class="text-white/80 hover:text-white" href={calculatorPath(c.slug)}>
+                  {c.name} cost
+                </a>
+              </li>
+            ))
+        }
+      </ul>
+    </nav>
+    <nav aria-label="Company">
+      <p class="mb-2 font-bold text-white">ZipCostly</p>
+      <ul class="space-y-1.5">
+        <li><a class="text-white/80 hover:text-white" href="/about/">About</a></li>
+        <li><a class="text-white/80 hover:text-white" href="/methodology/">Methodology</a></li>
+        <li><a class="text-white/80 hover:text-white" href="/contact/">Contact</a></li>
+        <li><a class="text-white/80 hover:text-white" href="/privacy/">Privacy</a></li>
+        <li><a class="text-white/80 hover:text-white" href="/terms/">Terms</a></li>
+      </ul>
+    </nav>
+  </div>
+  <p class="container-page border-t border-white/10 py-4 text-xs text-white/60">© {year} ZipCostly</p>
+</footer>

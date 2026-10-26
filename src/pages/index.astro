@@ -1,0 +1,96 @@
+---
+import Base from '../layouts/Base.astro';
+import { calculatorPath, calculators } from '../lib/data';
+import { site } from '../config/site';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: site.name,
+    url: site.url + '/',
+    description: site.description,
+  },
+  { '@context': 'https://schema.org', '@type': 'Organization', name: site.name, url: site.url + '/', logo: site.url + '/icon-512.png' },
+];
+---
+
+<Base title="ZipCostly: Home Project Cost Calculators by ZIP Code" description={site.description} jsonLd={jsonLd}>
+  <section class="bg-teal text-white">
+    <div class="container-page py-12 sm:py-16">
+      <h1 class="max-w-2xl text-4xl text-white sm:text-5xl">{site.tagline}</h1>
+      <p class="mt-4 max-w-xl text-lg text-white/85">
+        Free cost calculators for home projects. Instant, itemized price ranges based on labor rates where you live. No signup, no phone number.
+      </p>
+      <form class="mt-8 flex max-w-xl gap-2" role="search" id="home-search" action="/" onsubmit="return false">
+        <label for="q" class="sr-only">Search calculators</label>
+        <input id="q" type="search" placeholder="What's your project? e.g. bathroom, roof" class="min-w-0 flex-1 rounded-xl border-0 bg-white px-4 py-3 text-base text-ink placeholder:text-ink-soft" autocomplete="off" />
+        <button type="submit" class="rounded-xl bg-orange px-5 py-3 font-bold text-ink hover:brightness-95">Go</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="calculators" class="container-page py-10" aria-labelledby="grid-heading">
+    <h2 id="grid-heading" class="text-2xl">Cost calculators</h2>
+    <p id="no-results" class="mt-4 hidden text-ink-soft" role="status">No calculator matches that yet. Try another word.</p>
+    <ul class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" id="calc-grid">
+      {
+        calculators.map((c) => (
+          <li data-name={`${c.name} ${c.short}`.toLowerCase()}>
+            {c.live ? (
+              <a href={calculatorPath(c.slug)} class="card flex h-full flex-col p-5 no-underline transition hover:border-teal hover:shadow-sm">
+                <span class="text-lg font-extrabold text-ink">{c.name} cost</span>
+                <span class="mt-1 text-sm text-ink-soft">{c.short}</span>
+                <span class="mt-3 text-sm font-bold text-teal">Calculate →</span>
+              </a>
+            ) : (
+              <div class="card flex h-full flex-col p-5" aria-disabled="true">
+                <span class="text-lg font-extrabold text-ink">{c.name} cost</span>
+                <span class="mt-1 text-sm text-ink-soft">{c.short}</span>
+                <span class="mt-3 inline-block w-fit rounded-full bg-paper px-2.5 py-0.5 text-xs font-bold text-ink-soft">Coming soon</span>
+              </div>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="container-page grid gap-6 pb-6 sm:grid-cols-3" aria-label="How ZipCostly works">
+    <div class="card p-5">
+      <h2 class="text-lg">Local, not national</h2>
+      <p class="mt-1 text-sm text-ink-soft">Labor is often half the bill. We use wage data for your metro area, not one national number.</p>
+    </div>
+    <div class="card p-5">
+      <h2 class="text-lg">Itemized</h2>
+      <p class="mt-1 text-sm text-ink-soft">See materials, labor and permits line by line, so you can compare contractor quotes.</p>
+    </div>
+    <div class="card p-5">
+      <h2 class="text-lg">Always a range</h2>
+      <p class="mt-1 text-sm text-ink-soft">Real projects vary. We show low, typical and high, and explain <a href="/methodology/">how we calculate</a>.</p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const input = document.getElementById('q') as HTMLInputElement;
+  const items = [...document.querySelectorAll<HTMLLIElement>('#calc-grid > li')];
+  const empty = document.getElementById('no-results')!;
+  const filter = () => {
+    const words = input.value.toLowerCase().split(/\s+/).filter(Boolean);
+    let shown = 0;
+    for (const li of items) {
+      const match = words.every((w) => li.dataset.name!.includes(w));
+      li.hidden = !match;
+      if (match) shown++;
+    }
+    empty.classList.toggle('hidden', shown > 0);
+  };
+  input.addEventListener('input', filter);
+  document.getElementById('home-search')!.addEventListener('submit', () => {
+    filter();
+    const first = items.find((li) => !li.hidden)?.querySelector('a');
+    if (first) location.href = first.href;
+    else document.getElementById('calculators')!.scrollIntoView();
+  });
+</script>

@@ -1,0 +1,305 @@
+---
+// THE shared calculator template. Every project page renders this with its own data bundle.
+import AdSlot from './AdSlot.astro';
+import { estimate } from '../lib/estimate';
+import { formatDate, formatRange, formatUSD } from '../lib/format';
+import { breakdownHtml, compareHtml, placeLabel } from '../lib/render';
+import { QUALITIES, QUALITY_LABELS, type AreaRates, type ProjectBundle } from '../lib/types';
+
+interface Props {
+  bundle: ProjectBundle;
+  national: AreaRates;
+  provenance: { lastUpdated: string; entries: { label: string; last_updated: string; source: string[] }[] };
+}
+const { bundle, national, provenance } = Astro.props;
+const { recipe } = bundle;
+const defaults = Object.fromEntries(recipe.options.map((o) => [o.id, o.default]));
+const input = { size: recipe.size.default, quality: 'mid' as const, options: defaults };
+const est = estimate(bundle, national.wages, input);
+const localLabel = placeLabel(national);
+const resalePct = recipe.resale.recoup_pct;
+const payload = JSON.stringify({ bundle, national }).replace(/</g, '\\u003c');
+---
+
+<div id="calculator" data-slug={recipe.slug}>
+  <section aria-labelledby="result-heading" class="card overflow-hidden shadow-sm">
+    <form id="calc-form" class="grid grid-cols-2 gap-3 border-b border-line bg-teal-50/60 p-4 sm:grid-cols-[1fr_1fr_2fr] sm:p-5" novalidate>
+      <div>
+        <label for="zip" class="field-label">Your ZIP code</label>
+        <input id="zip" name="zip" class="field-input" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" maxlength="10" placeholder="e.g. 98101" aria-describedby="zip-msg" />
+      </div>
+      <div>
+        <label for="size" class="field-label">{recipe.size.label} ({recipe.size.unit})</label>
+        <input id="size" name="size" type="number" class="field-input" inputmode="decimal" min={recipe.size.min} max={recipe.size.max} step={recipe.size.step} value={recipe.size.default} aria-describedby="size-msg" />
+      </div>
+      <fieldset class="col-span-2 sm:col-span-1">
+        <legend class="field-label">Quality</legend>
+        <div class="grid grid-cols-3 gap-1 rounded-xl border border-line bg-white p-1">
+          {
+            QUALITIES.map((q) => (
+              <label class="cursor-pointer">
+                <input type="radio" name="quality" value={q} checked={q === 'mid'} class="peer sr-only" />
+                <span class="block rounded-lg px-1 py-2 text-center text-sm font-semibold text-ink-soft peer-checked:bg-teal peer-checked:text-white peer-focus-visible:outline-2 peer-focus-visible:outline-teal">{QUALITY_LABELS[q]}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+      <p id="zip-msg" class="col-span-2 min-h-5 text-sm text-ink-soft sm:col-span-3" aria-live="polite">Enter your ZIP for local labor rates. Showing the national average.</p>
+      <p id="size-msg" class="sr-only" aria-live="polite"></p>
+      <button type="submit" class="sr-only">Update estimate</button>
+    </form>
+
+    <div class="p-5 sm:p-6" aria-live="polite" aria-atomic="true">
+      <h2 id="result-heading" class="text-base font-semibold text-ink-soft">
+        Estimated {recipe.noun} cost in <span data-out="place">{localLabel}</span>
+      </h2>
+      <p class="mt-1 text-[2rem] leading-tight font-extrabold tracking-tight text-teal tabular-nums sm:text-5xl" data-out="range">{formatRange(est.total)}</p>
+      <p class="mt-2 text-lg">
+        Typical: <strong class="tabular-nums" data-out="typical">{formatUSD(est.total.typical)}</strong>
+        <span class="text-ink-soft" data-out="summary">· {QUALITY_LABELS.mid}, {recipe.size.default} {recipe.size.unit}</span>
+      </p>
+      <p id="calc-error" class="mt-2 hidden rounded-lg bg-orange-50 px-3 py-2 text-sm font-semibold text-ink" role="alert"></p>
+      <p class="mt-3 text-sm text-ink-soft">
+        This is a planning range, not a quote. Real quotes vary with your home's condition, access, your contractor and the season. Get 3 written quotes.
+      </p>
+    </div>
+  </section>
+
+  <AdSlot name="afterResult" />
+
+  <section aria-labelledby="options-heading" class="card mt-8 p-5 sm:p-6">
+    <h2 id="options-heading" class="text-xl">Project details</h2>
+    <div class="mt-4 grid gap-4 sm:grid-cols-2" id="calc-options">
+      {
+        recipe.options.map((o) => (
+          <div>
+            <label for={`opt-${o.id}`} class="field-label">{o.label}</label>
+            <select id={`opt-${o.id}`} name={o.id} form="calc-form" class="field-input" data-option>
+              {o.choices.map((c) => (
+                <option value={c.value} selected={c.value === o.default}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))
+      }
+    </div>
+    {recipe.size.hint && <p class="mt-3 text-sm text-ink-soft">{recipe.size.hint}</p>}
+    <p class="mt-4 rounded-xl bg-teal-50 px-4 py-3 font-semibold">
+      Your estimate: <span class="tabular-nums" data-out="range">{formatRange(est.total)}</span>
+    </p>
+  </section>
+
+  <section aria-labelledby="breakdown-heading" class="mt-8">
+    <h2 id="breakdown-heading" class="text-2xl">Cost breakdown</h2>
+    <p class="mt-1 text-sm text-ink-soft">Materials, labor and permits for the typical estimate, with each item's share of the total.</p>
+    <div class="card mt-4 overflow-x-auto" data-out="breakdown" set:html={breakdownHtml(est)} />
+  </section>
+
+  <section aria-labelledby="compare-heading" class="mt-8">
+    <h2 id="compare-heading" class="text-2xl">Compare</h2>
+    <p class="mt-1 text-sm text-ink-soft">The same project at each quality level, and against state and national averages.</p>
+    <div class="card mt-4 overflow-x-auto" data-out="compare" set:html={compareHtml(bundle, input, { local: national, localLabel, stateArea: null, stateName: null, national })} />
+  </section>
+
+  <section aria-labelledby="resale-heading" class="card mt-8 flex flex-wrap items-baseline justify-between gap-2 p-5">
+    <h2 id="resale-heading" class="text-lg">Value added at resale</h2>
+    <p class="text-ink-soft">
+      {resalePct === null ? 'Coming soon: we are gathering resale data for this project.' : `About ${resalePct}% of the cost (${recipe.resale.source})`}
+    </p>
+  </section>
+
+  <section aria-labelledby="feedback-heading" class="mt-8 rounded-2xl bg-ink px-5 py-5 text-white" id="feedback">
+    <h2 id="feedback-heading" class="text-lg text-white">Was this estimate close?</h2>
+    <p class="mt-1 text-sm text-white/70">If you have a real quote, tell us how we did.</p>
+    <div class="mt-3 flex flex-wrap gap-2" data-feedback-buttons>
+      <button type="button" data-feedback="too_low" class="rounded-full bg-white/10 px-4 py-2 font-semibold hover:bg-white/20">Quotes were higher</button>
+      <button type="button" data-feedback="close" class="rounded-full bg-orange px-4 py-2 font-semibold text-ink hover:brightness-95">Yes, close</button>
+      <button type="button" data-feedback="too_high" class="rounded-full bg-white/10 px-4 py-2 font-semibold hover:bg-white/20">Quotes were lower</button>
+    </div>
+    <p class="mt-3 hidden text-sm font-semibold" data-feedback-thanks role="status">Thanks! That helps us tune our numbers.</p>
+  </section>
+
+  <p class="mt-6 text-sm text-ink-soft">
+    <strong class="text-ink">Prices updated: {formatDate(provenance.lastUpdated)}.</strong>
+    <a href="/methodology/">How we estimate</a>.
+  </p>
+  <details class="mt-2 text-sm text-ink-soft">
+    <summary class="cursor-pointer font-semibold text-ink">Sources</summary>
+    <ul class="mt-2 list-disc space-y-1 pl-5">
+      {
+        provenance.entries.map((e) => (
+          <li>
+            <strong class="text-ink">{e.label}</strong> ({formatDate(e.last_updated)}): {e.source.join('; ')}
+          </li>
+        ))
+      }
+    </ul>
+  </details>
+
+  <script type="application/json" id="calc-data" set:html={payload} />
+</div>
+
+<script>
+  import { estimate, validateSize, EstimateError } from '../lib/estimate';
+  import { formatRange, formatUSD } from '../lib/format';
+  import { breakdownHtml, compareHtml, placeLabel } from '../lib/render';
+  import { normalizeZip, resolveArea, shardUrl } from '../lib/zip';
+  import { QUALITY_LABELS, type AreaRates, type ProjectBundle, type Quality, type ZipShard } from '../lib/types';
+
+  const root = document.getElementById('calculator')!;
+  const { bundle, national } = JSON.parse(document.getElementById('calc-data')!.textContent!) as { bundle: ProjectBundle; national: AreaRates };
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const zipInput = form.elements.namedItem('zip') as HTMLInputElement;
+  const sizeInput = form.elements.namedItem('size') as HTMLInputElement;
+  const zipMsg = document.getElementById('zip-msg')!;
+  const errorBox = document.getElementById('calc-error')!;
+  const outs = (name: string) => root.querySelectorAll<HTMLElement>(`[data-out="${name}"]`);
+  const set = (name: string, html: string, asHtml = false) =>
+    outs(name).forEach((el) => (asHtml ? (el.innerHTML = html) : (el.textContent = html)));
+
+  const ZIP_KEY = 'zipcostly:zip';
+  let area: AreaRates = national;
+  let stateArea: AreaRates | null = null;
+  let stateName: string | null = null;
+  let lastZip = '';
+  const shards = new Map<string, Promise<ZipShard | null>>();
+
+  const fetchShard = (zip: string) => {
+    const url = shardUrl(zip);
+    if (!shards.has(url)) shards.set(url, fetch(url).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+    return shards.get(url)!;
+  };
+
+  function readInput() {
+    const options: Record<string, string> = {};
+    root.querySelectorAll<HTMLSelectElement>('select[data-option]').forEach((s) => (options[s.name] = s.value));
+    const quality = (new FormData(form).get('quality') ?? 'mid') as Quality;
+    return { size: sizeInput.value === '' ? NaN : Number(sizeInput.value), quality, options };
+  }
+
+  function showError(msg: string | null) {
+    errorBox.textContent = msg ?? '';
+    errorBox.classList.toggle('hidden', !msg);
+    sizeInput.setAttribute('aria-invalid', msg ? 'true' : 'false');
+  }
+
+  function render() {
+    const input = readInput();
+    const sizeError = validateSize(bundle, input.size);
+    if (sizeError) return showError(sizeError);
+    try {
+      const est = estimate(bundle, area.wages, input);
+      showError(null);
+      const localLabel = placeLabel(area);
+      set('place', localLabel);
+      set('range', formatRange(est.total));
+      set('typical', formatUSD(est.total.typical));
+      set('summary', `· ${QUALITY_LABELS[input.quality]}, ${input.size} ${bundle.recipe.size.unit}`);
+      set('breakdown', breakdownHtml(est), true);
+      set('compare', compareHtml(bundle, input, { local: area, localLabel, stateArea, stateName, national }), true);
+      syncUrl(input);
+    } catch (e) {
+      showError(e instanceof EstimateError ? e.message : 'Something went wrong. Please check your inputs.');
+    }
+  }
+
+  async function updateZip(raw: string) {
+    const zip = normalizeZip(raw);
+    if (raw.trim() === '') {
+      area = national;
+      stateArea = null;
+      stateName = null;
+      lastZip = '';
+      zipMsg.textContent = 'Enter your ZIP for local labor rates. Showing the national average.';
+      return render();
+    }
+    if (!zip) {
+      zipMsg.textContent = 'Enter a 5-digit US ZIP code.';
+      return;
+    }
+    if (zip === lastZip) return;
+    lastZip = zip;
+    zipMsg.textContent = 'Looking up local rates…';
+    const result = resolveArea(zip, await fetchShard(zip), national);
+    if (zip !== lastZip) return; // a newer ZIP was typed while we waited
+    if (!result.ok) {
+      area = national;
+      stateArea = null;
+      zipMsg.textContent = `${result.error} Showing the national average.`;
+      return render();
+    }
+    area = result.area;
+    stateArea = result.stateArea;
+    stateName = result.state;
+    zipMsg.textContent =
+      result.level === 'metro'
+        ? `Using local labor rates for ZIP ${zip}.`
+        : result.level === 'state'
+          ? `Using ${result.area.name} average rates (no metro data for ZIP ${zip} yet).`
+          : `We don't have local data for ZIP ${zip} yet, so this uses national rates.`;
+    try {
+      localStorage.setItem(ZIP_KEY, zip);
+    } catch {}
+    render();
+  }
+
+  function syncUrl(input: ReturnType<typeof readInput>) {
+    const p = new URLSearchParams();
+    if (lastZip) p.set('zip', lastZip);
+    if (input.size !== bundle.recipe.size.default) p.set('size', String(input.size));
+    if (input.quality !== 'mid') p.set('quality', input.quality);
+    for (const o of bundle.recipe.options) if (input.options[o.id] !== o.default) p.set(o.id, input.options[o.id]);
+    const qs = p.toString();
+    history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
+  }
+
+  function restore() {
+    const p = new URLSearchParams(location.search);
+    const size = p.get('size');
+    if (size) sizeInput.value = size;
+    const q = p.get('quality');
+    if (q) form.querySelector<HTMLInputElement>(`input[name="quality"][value="${CSS.escape(q)}"]`)?.click();
+    root.querySelectorAll<HTMLSelectElement>('select[data-option]').forEach((s) => {
+      const v = p.get(s.name);
+      if (v && [...s.options].some((o) => o.value === v)) s.value = v;
+    });
+    let zip = p.get('zip');
+    if (!zip) {
+      try {
+        zip = localStorage.getItem(ZIP_KEY);
+      } catch {}
+    }
+    if (zip) {
+      zipInput.value = zip;
+      updateZip(zip);
+    } else if (p.size) render();
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    updateZip(zipInput.value);
+  });
+  zipInput.addEventListener('input', () => {
+    if (normalizeZip(zipInput.value) || zipInput.value === '') updateZip(zipInput.value);
+  });
+  zipInput.addEventListener('change', () => updateZip(zipInput.value));
+  // Option selects live outside the <form> element, so listen on the whole calculator.
+  root.addEventListener('change', (e) => {
+    if (e.target !== zipInput) render();
+  });
+  sizeInput.addEventListener('input', render);
+
+  root.querySelectorAll<HTMLButtonElement>('[data-feedback]').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      // No server yet: log only. Wire to analytics later.
+      console.log('[zipcostly feedback]', { calculator: bundle.recipe.slug, answer: btn.dataset.feedback, zip: lastZip || null, ...readInput() });
+      root.querySelector('[data-feedback-buttons]')!.classList.add('hidden');
+      root.querySelector('[data-feedback-thanks]')!.classList.remove('hidden');
+    }),
+  );
+
+  restore();
+</script>

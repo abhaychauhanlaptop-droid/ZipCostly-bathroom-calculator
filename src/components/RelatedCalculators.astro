@@ -1,0 +1,31 @@
+---
+import { calculatorPath, calculators } from '../lib/data';
+
+interface Props {
+  slugs: string[];
+}
+const related = Astro.props.slugs.map((s) => calculators.find((c) => c.slug === s)).filter((c) => c !== undefined);
+---
+
+<section aria-labelledby="related-heading" class="mt-12">
+  <h2 id="related-heading" class="text-2xl">Related cost calculators</h2>
+  <ul class="mt-4 grid gap-3 sm:grid-cols-3">
+    {
+      related.map((c) => (
+        <li>
+          {c.live ? (
+            <a href={calculatorPath(c.slug)} class="card block h-full p-4 no-underline hover:border-teal">
+              <span class="block font-bold text-ink">{c.name} cost</span>
+              <span class="mt-1 block text-sm text-ink-soft">{c.short}</span>
+            </a>
+          ) : (
+            <div class="card h-full border-dashed bg-paper p-4">
+              <span class="block font-bold text-ink">{c.name} cost</span>
+              <span class="mt-1 block text-sm text-ink-soft">Coming soon</span>
+            </div>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</section>

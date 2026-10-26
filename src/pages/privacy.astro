@@ -1,0 +1,20 @@
+---
+import Prose from '../components/Prose.astro';
+import { site } from '../config/site';
+---
+
+<Prose title="Privacy Policy | ZipCostly" description="ZipCostly's privacy policy: what we collect (very little), how ads use cookies, and your choices." h1="Privacy policy" needsReview>
+  <p><em>Last updated: October 26, 2026. This is a draft and should be reviewed by a lawyer before launch.</em></p>
+  <h2>What we collect</h2>
+  <p>
+    ZipCostly has no accounts and no forms. The ZIP code and project details you enter are processed in your browser. To save you retyping, your browser remembers the last ZIP code you used (in local storage on your device). We don't receive it.
+  </p>
+  <h2>Advertising</h2>
+  <p>
+    We show ads from Google AdSense, and may use other ad partners in future. These partners may use cookies and similar technologies to show ads based on your visits to this and other websites. You can opt out of personalized ads from Google at <a href="https://adssettings.google.com">Google Ad Settings</a> or visit <a href="https://www.aboutads.info">aboutads.info</a>.
+  </p>
+  <h2>Hosting</h2>
+  <p>Our host, Cloudflare, processes standard request data such as IP addresses to deliver and protect the site.</p>
+  <h2>Contact</h2>
+  <p>Questions? Email <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.</p>
+</Prose>

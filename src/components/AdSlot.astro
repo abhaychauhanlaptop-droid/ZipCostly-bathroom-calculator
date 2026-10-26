@@ -1,0 +1,42 @@
+---
+// One placeholder per ad position. Controlled entirely by `ads` in src/config/site.ts.
+// The box always reserves its min-height so a loading ad never shifts the page.
+import { ads, type AdSlotName } from '../config/site';
+
+interface Props {
+  name: AdSlotName;
+}
+const { name } = Astro.props;
+const slot = ads.slots[name];
+const render = ads.enabled || ads.showPlaceholders;
+const live = ads.enabled && ads.adsenseClient && slot.adsenseSlot;
+---
+
+{
+  render && (
+    <aside
+      class="ad-slot my-8 flex items-center justify-center overflow-hidden"
+      style={`min-height:${slot.minHeight}px`}
+      aria-label="Advertisement"
+      data-ad-slot-name={name}
+    >
+      {live ? (
+        <>
+          <ins
+            class="adsbygoogle block w-full"
+            style={`display:block;min-height:${slot.minHeight}px`}
+            data-ad-client={ads.adsenseClient}
+            data-ad-slot={slot.adsenseSlot}
+            data-ad-format="auto"
+            data-full-width-responsive="true"
+          />
+          <script is:inline>(window.adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </>
+      ) : (
+        <div class="flex h-full w-full items-center justify-center rounded-xl border-2 border-dashed border-line text-xs font-semibold tracking-widest text-ink-soft uppercase" style={`min-height:${slot.minHeight}px`}>
+          Ad · {name}
+        </div>
+      )}
+    </aside>
+  )
+}
