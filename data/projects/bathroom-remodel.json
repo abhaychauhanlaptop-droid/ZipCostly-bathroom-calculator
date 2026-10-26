@@ -1,0 +1,93 @@
+{
+  "last_updated": "2026-10-26",
+  "source": "ZipCostly draft recipe: quantities and labor hours for a full gut remodel of one bathroom. NEEDS HUMAN REVIEW.",
+  "slug": "bathroom-remodel",
+  "name": "Bathroom Remodel",
+  "noun": "bathroom remodel",
+  "description": "A full remodel of one bathroom: demolition, new tile floor and shower walls, vanity, toilet, tub or shower, lighting and paint.",
+  "size": { "label": "Bathroom size", "unit": "sq ft", "default": 50, "min": 15, "max": 400, "step": 5, "hint": "A standard 5×8 ft bathroom is 40 sq ft; a primary bath is often 80–120." },
+  "options": [
+    {
+      "id": "shower_type",
+      "label": "Tub or shower",
+      "default": "tub_shower",
+      "choices": [
+        { "value": "tub_shower", "label": "Tub with tiled shower surround" },
+        { "value": "walk_in", "label": "Walk-in tiled shower with glass" }
+      ]
+    },
+    {
+      "id": "vanity",
+      "label": "Vanity",
+      "default": "single",
+      "choices": [
+        { "value": "single", "label": "Single sink" },
+        { "value": "double", "label": "Double sink" }
+      ]
+    },
+    {
+      "id": "relocate_plumbing",
+      "label": "Move the toilet, tub or sink to a new spot?",
+      "default": "no",
+      "choices": [
+        { "value": "no", "label": "No, keep the layout" },
+        { "value": "yes", "label": "Yes, change the layout" }
+      ]
+    },
+    {
+      "id": "heated_floor",
+      "label": "Heated floor",
+      "default": "no",
+      "choices": [
+        { "value": "no", "label": "No" },
+        { "value": "yes", "label": "Yes" }
+      ]
+    }
+  ],
+  "materials": [
+    { "item": "floor_tile", "qty": { "per_size": 1.1 } },
+    { "item": "wall_tile", "qty": { "base": 70 }, "when": { "shower_type": "tub_shower" } },
+    { "item": "wall_tile", "qty": { "base": 95 }, "when": { "shower_type": "walk_in" } },
+    { "item": "tile_setting", "qty": { "base": 70, "per_size": 1.1 }, "when": { "shower_type": "tub_shower" } },
+    { "item": "tile_setting", "qty": { "base": 95, "per_size": 1.1 }, "when": { "shower_type": "walk_in" } },
+    { "item": "backer_board", "qty": { "base": 32, "per_size": 1.5 } },
+    { "item": "paint_supplies", "qty": { "base": 1 } },
+    { "item": "vanity", "qty": { "base": 1 }, "when": { "vanity": "single" } },
+    { "item": "double_vanity", "qty": { "base": 1 }, "when": { "vanity": "double" } },
+    { "item": "sink_faucet", "qty": { "base": 1 }, "when": { "vanity": "single" } },
+    { "item": "sink_faucet", "qty": { "base": 2 }, "when": { "vanity": "double" } },
+    { "item": "toilet", "qty": { "base": 1 } },
+    { "item": "bathtub", "qty": { "base": 1 }, "when": { "shower_type": "tub_shower" } },
+    { "item": "shower_valve", "qty": { "base": 1 } },
+    { "item": "shower_pan", "qty": { "base": 1 }, "when": { "shower_type": "walk_in" } },
+    { "item": "shower_glass", "qty": { "base": 1 }, "when": { "shower_type": "walk_in" } },
+    { "item": "lighting_fan", "qty": { "base": 1 } },
+    { "item": "accessories", "qty": { "base": 1 } },
+    { "item": "plumbing_supplies", "qty": { "base": 1 } },
+    { "item": "electrical_supplies", "qty": { "base": 1 } },
+    { "item": "heated_floor", "qty": { "per_size": 0.8 }, "when": { "heated_floor": "yes" } },
+    { "item": "relocation_supplies", "qty": { "base": 1 }, "when": { "relocate_plumbing": "yes" } }
+  ],
+  "labor": [
+    { "id": "demolition", "label": "Demolition & cleanup", "trade": "general_labor", "hours": { "base": 8, "per_size": 0.12 } },
+    { "id": "plumbing", "label": "Plumbing", "trade": "plumber", "hours": { "base": 14 } },
+    { "id": "plumbing_walk_in", "label": "Shower pan & drain plumbing", "trade": "plumber", "hours": { "base": 4 }, "when": { "shower_type": "walk_in" } },
+    { "id": "plumbing_double", "label": "Second sink plumbing", "trade": "plumber", "hours": { "base": 4 }, "when": { "vanity": "double" } },
+    { "id": "plumbing_relocate", "label": "Moving drains & supply lines", "trade": "plumber", "hours": { "base": 16 }, "when": { "relocate_plumbing": "yes" } },
+    { "id": "relocate_carpentry", "label": "Floor & wall repair after moving pipes", "trade": "carpenter", "hours": { "base": 8 }, "when": { "relocate_plumbing": "yes" } },
+    { "id": "electrical", "label": "Electrical", "trade": "electrician", "hours": { "base": 7 } },
+    { "id": "electrical_heated", "label": "Heated floor wiring", "trade": "electrician", "hours": { "base": 4 }, "when": { "heated_floor": "yes" } },
+    { "id": "carpentry", "label": "Carpentry, backer board & fixture install", "trade": "carpenter", "hours": { "base": 10, "per_size": 0.1 } },
+    { "id": "glass_install", "label": "Shower glass install", "trade": "carpenter", "hours": { "base": 3 }, "when": { "shower_type": "walk_in" } },
+    { "id": "tile", "label": "Tile installation", "trade": "tile_setter", "hours": { "base": 22, "per_size": 0.22 }, "when": { "shower_type": "tub_shower" } },
+    { "id": "tile_walk_in", "label": "Tile installation", "trade": "tile_setter", "hours": { "base": 34, "per_size": 0.22 }, "when": { "shower_type": "walk_in" } },
+    { "id": "painting", "label": "Painting", "trade": "painter", "hours": { "base": 4, "per_size": 0.06 } }
+  ],
+  "fees": [
+    { "id": "permit", "label": "Building & plumbing permits", "fixed": 200, "pct_of_subtotal": 0.01 },
+    { "id": "disposal", "label": "Dumpster & debris disposal", "fixed": 350, "per_size": 2 }
+  ],
+  "quality_labor_factor": { "budget": 0.9, "mid": 1.0, "premium": 1.25 },
+  "resale": { "recoup_pct": null, "source": null },
+  "related": ["kitchen-remodel", "flooring-installation", "interior-painting"]
+}

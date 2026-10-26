@@ -1,0 +1,16 @@
+{
+  "last_updated": "2026-10-26",
+  "source": "ZipCostly calculator registry",
+  "calculators": [
+    { "slug": "bathroom-remodel", "name": "Bathroom Remodel", "short": "Tile, vanity, tub or shower, fixtures and labor.", "live": true },
+    { "slug": "kitchen-remodel", "name": "Kitchen Remodel", "short": "Cabinets, counters, appliances and labor.", "live": false },
+    { "slug": "roof-replacement", "name": "Roof Replacement", "short": "Tear-off, shingles or metal, and labor.", "live": false },
+    { "slug": "flooring-installation", "name": "Flooring Installation", "short": "Hardwood, LVP, tile or carpet, installed.", "live": false },
+    { "slug": "interior-painting", "name": "Interior Painting", "short": "Walls, ceilings and trim by room size.", "live": false },
+    { "slug": "exterior-painting", "name": "Exterior Painting", "short": "Siding and trim prep and paint.", "live": false },
+    { "slug": "fence-installation", "name": "Fence Installation", "short": "Wood, vinyl, chain-link or aluminum.", "live": false },
+    { "slug": "deck", "name": "Deck", "short": "Pressure-treated, cedar or composite decks.", "live": false },
+    { "slug": "driveway", "name": "Driveway", "short": "Asphalt, concrete or pavers.", "live": false },
+    { "slug": "siding", "name": "Siding", "short": "Vinyl, fiber cement or wood siding.", "live": false }
+  ]
+}

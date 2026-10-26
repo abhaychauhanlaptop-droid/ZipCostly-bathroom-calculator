@@ -1,0 +1,73 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-teal: #0e6e6e;
+  --color-teal-dark: #0a5252;
+  --color-teal-50: #e6f1f0;
+  --color-orange: #f28c28;
+  --color-orange-50: #fdf0e3;
+  --color-ink: #15201f;
+  --color-ink-soft: #4a5654;
+  --color-paper: #f6f4ef;
+  --color-line: #e2ded4;
+  --font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+@layer base {
+  html {
+    @apply bg-paper text-ink antialiased;
+    -webkit-text-size-adjust: 100%;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-extrabold tracking-tight text-ink;
+  }
+  a {
+    @apply text-teal underline underline-offset-2;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-teal;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-5xl px-4 sm:px-6;
+  }
+  .card {
+    @apply rounded-2xl border border-line bg-white;
+  }
+  .prose-guide {
+    @apply text-[1.0625rem] leading-relaxed text-ink;
+  }
+  .prose-guide h2 {
+    @apply mt-10 mb-3 text-2xl;
+  }
+  .prose-guide h3 {
+    @apply mt-6 mb-2 text-lg;
+  }
+  .prose-guide p,
+  .prose-guide ul,
+  .prose-guide ol {
+    @apply my-4;
+  }
+  .prose-guide ul {
+    @apply list-disc pl-6;
+  }
+  .prose-guide ol {
+    @apply list-decimal pl-6;
+  }
+  .prose-guide li {
+    @apply my-1.5;
+  }
+  .prose-guide strong {
+    @apply font-bold;
+  }
+  .field-label {
+    @apply mb-1 block text-sm font-semibold text-ink;
+  }
+  .field-input {
+    @apply block w-full rounded-xl border border-line bg-white px-3 py-2.5 text-base text-ink;
+  }
+}

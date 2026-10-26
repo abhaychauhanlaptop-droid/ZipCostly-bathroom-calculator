@@ -1,0 +1,11 @@
+{
+  "last_updated": "2026-10-26",
+  "source": "ZipCostly methodology. Markup reflects typical residential contractor payroll burden (~25-35%) plus overhead and profit (~40-60%). NEEDS HUMAN REVIEW.",
+  "contractor_markup": 2.0,
+  "range": {
+    "low": { "materials_factor": 0.85, "wage": "hourly_p25" },
+    "typical": { "materials_factor": 1.0, "wage": "hourly_median" },
+    "high": { "materials_factor": 1.2, "wage": "hourly_p75" }
+  },
+  "round_to": 100
+}

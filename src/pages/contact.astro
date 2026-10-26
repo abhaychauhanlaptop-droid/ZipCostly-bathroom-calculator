@@ -1,0 +1,10 @@
+---
+import Prose from '../components/Prose.astro';
+import { site } from '../config/site';
+---
+
+<Prose title="Contact ZipCostly" description="Get in touch with ZipCostly about our cost data, a correction, or advertising." h1="Contact us">
+  <p>Spotted a price that looks wrong for your area? Have a real quote you can share? We'd love to hear it.</p>
+  <p>Email <a href={`mailto:${site.contactEmail}`}><strong>{site.contactEmail}</strong></a>.</p>
+  <p>We can't recommend contractors or give advice on a specific project.</p>
+</Prose>

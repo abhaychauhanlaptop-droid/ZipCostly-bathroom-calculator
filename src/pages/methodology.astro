@@ -1,0 +1,54 @@
+---
+import Prose from '../components/Prose.astro';
+import { assumptions } from '../lib/data';
+const r = assumptions.range;
+const pct = (f: number) => `${Math.round((f - 1) * 100)}%`;
+---
+
+<Prose title="How ZipCostly Estimates Are Calculated | Methodology" description="How ZipCostly builds each cost estimate: local labor wages, material prices, permit fees and the assumptions behind every low, typical and high range." h1="How our estimates are calculated" needsReview>
+  <p>Every ZipCostly calculator uses the same method. Each project is described as a list of materials, labor tasks and fees. We price that list with local wages and current material prices.</p>
+
+  <h2>1. Materials</h2>
+  <p>
+    For each item (tile, vanity, fixtures and so on) we keep budget, mid-range and premium unit prices, based on typical retail prices. We multiply by the quantity your project needs, which scales with its size. Material prices are national for now.
+  </p>
+
+  <h2>2. Labor</h2>
+  <p>
+    Each task has an estimated number of hours for a given trade (plumber, electrician, carpenter, tile setter, painter, roofer or general laborer). We multiply hours by the local wage for that trade. Premium finishes take longer, so hours rise with quality.
+  </p>
+  <p>
+    Wages come from the U.S. Bureau of Labor Statistics (BLS) Occupational Employment and Wage Statistics survey, by metro area. Wages are what workers earn, not what contractors charge, so we multiply by <strong>{assumptions.contractor_markup}×</strong> to cover payroll taxes, insurance, overhead and profit.
+  </p>
+
+  <h2>3. Permits and fees</h2>
+  <p>We add typical permit fees (a fixed amount plus a small share of the job) and disposal costs, such as a dumpster.</p>
+
+  <h2>4. Turning it into a range</h2>
+  <ul>
+    <li><strong>Low:</strong> wages at the 25th percentile for your area, materials {pct(r.low.materials_factor)} below list.</li>
+    <li><strong>Typical:</strong> median wages, list material prices.</li>
+    <li><strong>High:</strong> wages at the 75th percentile, materials {pct(r.high.materials_factor)} above list.</li>
+  </ul>
+  <p>Totals are rounded to the nearest ${assumptions.round_to}. We never show one exact number.</p>
+
+  <h2>5. Where your ZIP code fits in</h2>
+  <p>
+    We match your ZIP code to its metro area and use that area's wages. If we don't have metro data for your ZIP yet, we use your state's average, and if we don't have that either, the national average. The calculator always tells you which one it used.
+  </p>
+
+  <h2>What estimates don't include</h2>
+  <ul>
+    <li>Hidden damage such as rot, mold or old wiring found during the work.</li>
+    <li>Structural changes, unless the calculator asks about them.</li>
+    <li>Sales tax, financing costs and design fees.</li>
+  </ul>
+
+  <h2>Data sources</h2>
+  <ul>
+    <li>Labor: U.S. Bureau of Labor Statistics, Occupational Employment and Wage Statistics (OEWS).</li>
+    <li>ZIP to metro area: HUD USPS ZIP Code Crosswalk.</li>
+    <li>Materials: typical retail prices, reviewed regularly.</li>
+  </ul>
+  <p>Each calculator page shows the date its prices were last updated and lists its sources.</p>
+</Prose>

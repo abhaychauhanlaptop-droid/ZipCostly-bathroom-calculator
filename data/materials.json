@@ -1,0 +1,27 @@
+{
+  "last_updated": "2026-10-26",
+  "source": "Draft unit prices from typical big-box retail pricing (Home Depot / Lowe's style ranges) as of 2026. NEEDS HUMAN REVIEW against current retailer prices.",
+  "projects": {
+    "bathroom-remodel": {
+      "floor_tile": { "label": "Floor tile", "unit": "sq ft", "price": { "budget": 2.5, "mid": 6, "premium": 14 } },
+      "wall_tile": { "label": "Shower wall tile", "unit": "sq ft", "price": { "budget": 2.5, "mid": 7, "premium": 16 } },
+      "tile_setting": { "label": "Thinset, grout & waterproofing", "unit": "sq ft", "price": { "budget": 1.5, "mid": 2.5, "premium": 4 } },
+      "backer_board": { "label": "Cement board & drywall", "unit": "sq ft", "price": { "budget": 1.2, "mid": 1.6, "premium": 2.2 } },
+      "paint_supplies": { "label": "Paint, primer & supplies", "unit": "each", "price": { "budget": 60, "mid": 110, "premium": 180 } },
+      "vanity": { "label": "Vanity with countertop & sink", "unit": "each", "price": { "budget": 350, "mid": 1100, "premium": 3200 } },
+      "double_vanity": { "label": "Double vanity with countertop & sinks", "unit": "each", "price": { "budget": 700, "mid": 2000, "premium": 5000 } },
+      "sink_faucet": { "label": "Sink faucet", "unit": "each", "price": { "budget": 90, "mid": 220, "premium": 550 } },
+      "toilet": { "label": "Toilet", "unit": "each", "price": { "budget": 220, "mid": 420, "premium": 950 } },
+      "bathtub": { "label": "Bathtub", "unit": "each", "price": { "budget": 450, "mid": 1200, "premium": 3000 } },
+      "shower_valve": { "label": "Shower valve, trim & head", "unit": "each", "price": { "budget": 180, "mid": 420, "premium": 1100 } },
+      "shower_pan": { "label": "Shower pan, drain & membrane", "unit": "each", "price": { "budget": 350, "mid": 700, "premium": 1500 } },
+      "shower_glass": { "label": "Glass shower door or panel", "unit": "each", "price": { "budget": 400, "mid": 1100, "premium": 2600 } },
+      "lighting_fan": { "label": "Lighting & exhaust fan", "unit": "each", "price": { "budget": 180, "mid": 450, "premium": 1100 } },
+      "accessories": { "label": "Mirror, towel bars & accessories", "unit": "each", "price": { "budget": 90, "mid": 260, "premium": 700 } },
+      "plumbing_supplies": { "label": "Pipe, valves & fittings", "unit": "each", "price": { "budget": 150, "mid": 250, "premium": 400 } },
+      "electrical_supplies": { "label": "Wiring, GFCI outlets & switches", "unit": "each", "price": { "budget": 80, "mid": 140, "premium": 250 } },
+      "heated_floor": { "label": "Electric floor-heating mat & thermostat", "unit": "sq ft", "price": { "budget": 12, "mid": 16, "premium": 22 } },
+      "relocation_supplies": { "label": "Extra pipe & drains for moved fixtures", "unit": "each", "price": { "budget": 300, "mid": 500, "premium": 800 } }
+    }
+  }
+}
